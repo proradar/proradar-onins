@@ -1,0 +1,66 @@
+@font-face {
+    font-family: FNAF;
+    src: url("FNAF.ttf");
+}
+@font-face {
+    font-family: PressStart2P;
+    src: url("PressStart2P-Regular.ttf");
+}
+
+body {
+  background-color: #000;
+}
+.container {
+  width: 800px;
+  border-color: #00ff00;
+  border-width: 5px;
+  border-style: solid;
+}
+p {
+  font-family: sans-serif;
+  color: #00ff00;
+}
+img {
+  display: none;
+}
+.title {
+  font-family: sans-serif;
+  color: #00ff00;
+  font-size: 50px;
+}
+.gameContainer {
+  margin-left: 100px;
+  margin-right: 100px;
+  margin-bottom: 10px;
+  border-color: #00ff00;
+  border-width: 5px;
+  border-style: solid;
+}
+.gameContent{
+  width: 500px;
+  height: 500px;
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  border-color: #ff0000;
+  border-width: 5px;
+  border-style: solid;
+}
+#start{
+  position: relative;
+  width: 50px;
+  height: 25px;
+  margin-left: 0px;
+  margin-top: 0px;
+  border-color: #0f0;
+  border-width: 3px;
+  border-style: solid;
+  cursor: pointer;
+}
+#startText{
+  font-family: sans-serif;
+  color: #00ff00;
+  margin-top: 5px;
+  font-size: 10px;
+}
