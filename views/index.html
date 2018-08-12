@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>ONINS</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <center>
+    <div id="container" class="container">
+      <p class="title">One Night is Not Scary</p>
+      <div id="gameContainer" class="gameContainer">
+        <div id="gameContent" class="gameContent">
+          <div id="map">
+            <div class="bedroom">
+              <div id="dotB1" class="active"/>
+              <div id="dotB2" class="inactive"/>
+            </div>
+            <div class="corridor1"/>
+            <div class="corridor2"/>
+            <div class="corridor3">
+              <div id="dotMA1" class="inactive"/>
+            </div>
+            <div class="corridor4">
+              <div id="dotLH1" class="inactive"/>
+              <div id="dotLH2" class="inactive"/>
+              <div id="dotLH3" class="inactive"/>
+            </div>
+            <div class="corridor5">
+              <div id="dotMH1" class="inactive"/>
+              <div id="dotMH2" class="inactive"/>
+            </div>
+            <div class="corridor6">
+              <div id="dotRH1" class="inactive"/>
+              <div id="dotRH2" class="inactive"/>
+              <div id="dotRH3" class="inactive"/>
+            </div>
+            <div class="doorway1">
+              <div id="dotLH4" class="inactive"/>
+            </div>
+            <div class="doorway2">
+              <div id="dotMH3" class="inactive"/>
+            </div>
+            <div class="doorway3">
+              <div id="dotRH4" class="inactive"/>
+            </div>
+            <div class="office">
+              <p class="officeText">YOU</p>
+              <div id="dotO1" class="inactive"/>
+              <div id="door1"/>
+              <div id="door2"/>
+              <div id="door3"/>
+            </div>
+            <div id="btn1"></div>
+            <div id="btn2"></div>
+            <div id="btn3"></div>
+          </div>
+        </div>
+      </div>
+      <div id="start">
+        <p id="startText">Start</p>
+      </div>
+      <!-- <div id="controls" class="controls">
+        <button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.05)">ACCELERATE</button>
+        <p>Use the ACCELERATE button to stay in the air</p>
+        <p>How long can you stay alive?</p>
+      </div> -->
+    </div>
+  </center>
+  <script src="index.js" charset="utf-8"></script>
+</body>
+</html>

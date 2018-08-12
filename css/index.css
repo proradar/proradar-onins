@@ -1,0 +1,321 @@
+@font-face {
+    font-family: FNAF;
+    src: url("FNAF.ttf");
+}
+
+body {
+  background-color: #000;
+}
+.container {
+  width: 800px;
+  border-color: #00ff00;
+  border-width: 5px;
+  border-style: solid;
+}
+p {
+  font-family: sans-serif;
+  color: #00ff00;
+}
+.title {
+  font-family: sans-serif;
+  color: #00ff00;
+  font-size: 50px;
+}
+.gameContainer {
+  margin-left: 100px;
+  margin-right: 100px;
+  margin-bottom: 100px;
+  border-color: #00ff00;
+  border-width: 5px;
+  border-style: solid;
+}
+.gameContent{
+  width: 500px;
+  height: 500px;
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  border-color: #ff0000;
+  border-width: 5px;
+  border-style: solid;
+}
+
+/* Rooms */
+.bedroom{
+  position: absolute;
+  width: 100px;
+  height: 50px;
+  margin-left: 30px;
+  margin-top: 30px;
+  border-color: #fff;
+  border-width: 5px;
+  border-style: solid;
+}
+.corridor1{
+  position: absolute;
+  width: 100px;
+  height: 15px;
+  margin-left: 100px;
+  margin-top: -1px;
+  border-color: #fff;
+  border-width: 5px;
+  border-style: solid;
+}
+.corridor2{
+  position: absolute;
+  width: 15px;
+  height: 50px;
+  margin-left: 80px;
+  margin-top: 25px;
+  border-color: #fff;
+  border-width: 5px;
+  border-style: solid;
+}
+.corridor3{
+  position: absolute;
+  width: 250px;
+  height: 75px;
+  margin-left: -125px;
+  margin-top: 60px;
+  border-color: #fff;
+  border-width: 5px;
+  border-style: solid;
+}
+.corridor4{
+  position: absolute;
+  width: 40px;
+  height: 175px;
+  margin-left: -4px;
+  margin-top: 85px;
+  border-color: #fff;
+  border-width: 5px;
+  border-style: solid;
+}
+.corridor5{
+  position: absolute;
+  width: 40px;
+  height: 100px;
+  margin-left: 90px;
+  margin-top: -75px;
+  border-color: #fff;
+  border-width: 5px;
+  border-style: solid;
+}
+.corridor6{
+  position: absolute;
+  width: 40px;
+  height: 175px;
+  margin-left: 90px;
+  margin-top: -15px;
+  border-color: #fff;
+  border-width: 5px;
+  border-style: solid;
+}
+.doorway1{
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  margin-left: -170px;
+  margin-top: 80px;
+  border-color: #fff;
+  border-width: 5px;
+  border-style: solid;
+}
+.doorway2{
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  margin-left: 55px;
+  margin-top: -45px;
+  border-color: #fff;
+  border-width: 5px;
+  border-style: solid;
+}
+.doorway3{
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  margin-left: 52px;
+  margin-top: 35px;
+  border-color: #fff;
+  border-width: 5px;
+  border-style: solid;
+}
+#door1{
+  position: absolute;
+  width: 5px;
+  height: 25px;
+  margin-left: -36.5px;
+  margin-top: -14px;
+  background-color: #fff;
+}
+#door2{
+  position: absolute;
+  width: 25.5px;
+  height: 5px;
+  margin-left: 35px;
+  margin-top: -15.5px;
+  background-color: #fff;
+}
+#door3{
+  position: absolute;
+  width: 5px;
+  height: 25px;
+  margin-left: 52px;
+  margin-top: 15px;
+  background-color: #fff;
+}
+#btn1{
+  position: absolute;
+  width: 50px;
+  height: 25px;
+  margin-left: -80px;
+  margin-top: 50px;
+  background-color: #b00;
+  cursor: pointer;
+}
+#btn2{
+  position: absolute;
+  width: 50px;
+  height: 25px;
+  margin-left: -12px;
+  margin-top: 80px;
+  background-color: #b00;
+  cursor: pointer;
+}
+#btn3{
+  position: absolute;
+  width: 50px;
+  height: 25px;
+  margin-left: 52px;
+  margin-top: 50px;
+  background-color: #b00;
+  cursor: pointer;
+}
+#start{
+  position: relative;
+  width: 50px;
+  height: 25px;
+  margin-left: 0px;
+  margin-top: 125px;
+  border-color: #0f0;
+  border-width: 3px;
+  border-style: solid;
+  cursor: pointer;
+}
+#startText{
+  font-family: sans-serif;
+  color: #00ff00;
+  margin-top: 5px;
+  font-size: 10px;
+}
+.office{
+  position: absolute;
+  width: 60px;
+  height: 50px;
+  margin-left: -80px;
+  margin-top: -5px;
+  border-color: #fff;
+  border-width: 5px;
+  border-style: solid;
+}
+.officeText{
+  position: absolute;
+  margin-left: 12.5px;
+  margin-top: 15px;
+  color: #fff;
+  font-family: FNAF;
+}
+
+/* Dots */
+.inactive{
+  width: 20px;
+  height: 20px;
+  background-color: rgba(100,100,100,0);
+  border-radius: 20px;
+}
+.active{
+  width: 20px;
+  height: 20px;
+  background-color: #ffff00;
+  border-radius: 20px;
+}
+
+/* Bedroom */
+#dotB1{
+  position: absolute;
+  margin-top: 15px;
+  margin-left: 10px;
+}
+#dotB2{
+  position: absolute;
+  margin-top: 0px;
+  margin-left: 60px;
+}
+/* Main Area */
+#dotMA1{
+  position: absolute;
+  margin-top: 25px;
+  margin-left: 115px;
+}
+/* Left Hall */
+#dotLH1{
+  position: absolute;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+#dotLH2{
+  position: absolute;
+  margin-top: 60px;
+}
+#dotLH3{
+  position: absolute;
+  margin-top: 60px;
+}
+#dotLH4{
+  position: absolute;
+  margin-top: 2.5px;
+  margin-left: 2.5px;
+}
+/* Middle Hall */
+#dotMH1{
+  position: absolute;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+#dotMH2{
+  position: absolute;
+  margin-top: 60px;
+}
+#dotMH3{
+  position: absolute;
+  margin-top: 2.5px;
+  margin-left: 2.5px;
+}
+/* Right Hall */
+#dotRH1{
+  position: absolute;
+  margin-top: 10px;
+  margin-left: 10px;
+}
+#dotRH2{
+  position: absolute;
+  margin-top: 60px;
+}
+#dotRH3{
+  position: absolute;
+  margin-top: 60px;
+}
+#dotRH4{
+  position: absolute;
+  margin-top: 2.5px;
+  margin-left: 2.5px;
+}
+
+/* Office */
+#dotO1{
+  position: absolute;
+  margin-top: 15px;
+  margin-left: 20px;
+}
