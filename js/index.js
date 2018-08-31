@@ -11,11 +11,26 @@ var deskPic = document.getElementById("desk");
 var deskNoPowerPic = document.getElementById("deskNoPower");
 var camOverlay = document.getElementById("camOverlay");
 var mapPic = document.getElementById("map");
+var doorPellet1 = document.getElementById("doorPellet1");
+var doorPellet2 = document.getElementById("doorPellet2");
+var doorPellet3 = document.getElementById("doorPellet3");
 var pellet1Bedroom = document.getElementById("pellet1Bedroom");
+var pellet2Bedroom = document.getElementById("pellet2Bedroom");
+var pellet3Bedroom = document.getElementById("pellet3Bedroom");
 var pellet1MainHall = document.getElementById("pellet1MainHall");
+var pellet2MainHall = document.getElementById("pellet2MainHall");
+var pellet3MainHall = document.getElementById("pellet3MainHall");
 var pellet1LeftHall = document.getElementById("pellet1LeftHall");
+var pellet2LeftHall = document.getElementById("pellet2LeftHall");
+var pellet3LeftHall = document.getElementById("pellet3LeftHall");
+var pellet4LeftHall = document.getElementById("pellet4LeftHall");
 var pellet1MiddleHall = document.getElementById("pellet1MiddleHall");
+var pellet2MiddleHall = document.getElementById("pellet2MiddleHall");
+var pellet3MiddleHall = document.getElementById("pellet3MiddleHall");
 var pellet1RightHall = document.getElementById("pellet1RightHall");
+var pellet2RightHall = document.getElementById("pellet2RightHall");
+var pellet3RightHall = document.getElementById("pellet3RightHall");
+var pellet4RightHall = document.getElementById("pellet4RightHall");
 
 // ID
 var buttonID = ["newGame", "continueGame", "doorLight1", "doorClose1", "doorClose2", "doorLight3", "doorClose3", "camButton","cam1","cam2","cam3","cam4","cam5","mute"]
@@ -23,11 +38,18 @@ var doorID = ["door1", "door2", "door3"]
 // var doorStateID = ["openDoor1", "closeDoor1", "openLight1", "closeLight1", "closeDoor2", "openLight2", "closeLight2", "openDoor3", "closeDoor3", "openLight3", "closeLight3"]
 var roomStateID = ["menu", "night1Transition", "night1", "night1End", "bedroom", "powerOutage", "mainHall", "leftHall", "middleHall", "rightHall"]
 var state;
+// Pellet
+var pelletRoom = ['Bedroom','MainArea','LeftHall','MiddleHall','RightHall','Office']
+var seconds= 0
+var moveTime= 0
+var phase = 1
+var pelletRoomIn = pelletRoom[0]
 
 // Public
 var buttons = [];
 var texts = [];
 var doors = [];
+var pelletDoor = [];
 var doorCovers = [];
 var backgrounds = [];
 var staticCam = [];
@@ -76,6 +98,7 @@ function startGame() {
     // myHealthNum.color = "#f00";
     if (hasPressed == false) {
       switchRoomState(roomStateID[0])
+      dead = false;
       myGameArea.start();
     }
 }
@@ -346,6 +369,9 @@ function updateGameArea() {
         if (myGameArea.frameNo == 1 || everyinterval(2700)) {
           changeTime();
         }
+        if (myGameArea.frameNo == 1 || everyinterval(30)) {
+          move();
+        }
       }
     }
     for (var i = 0; i < backgrounds.length; i++) {
@@ -359,6 +385,10 @@ function updateGameArea() {
     for (var i = 0; i < doors.length; i++) {
       doors[i].newPos();
       doors[i].update();
+    }
+    for (var i = 0; i < pelletDoor.length; i++) {
+      pelletDoor[i].newPos();
+      pelletDoor[i].update();
     }
     for (var i = 0; i < doorCovers.length; i++) {
       doorCovers[i].newPos();
@@ -580,6 +610,7 @@ function switchRoomState(n) {
   camButtonDetect = [];
   cam = [];
   mapRender = [];
+  pelletDoor = [];
   if (n == roomStateID[0]) {
     state = roomStateID[0];
     dead = false;
@@ -591,6 +622,8 @@ function switchRoomState(n) {
     texts.push(new component("25px", "PressStart2P", "white", 20, 220, "text", "Scary"));
     texts.push(new component("20px", "PressStart2P", "white", 20, 295, "text", "New Game"));
     texts.push(new component("20px", "PressStart2P", "white", 20, 335, "text", "Continue Game"));
+    texts.push(new component("10px", "PressStart2P", "white", 330, 475, "text", "2018 By proradar"));
+    texts.push(new component("10px", "PressStart2P", "white", 270, 495, "text", "Based on Scott Cawthon"));
     buttons.push(new component(180, 30, "rgba(0,0,0,0)", 10, 270, "newGame"));
     buttons.push(new component(280, 30, "rgba(0,0,0,0)", 10, 310, "continueGame"));
     audio.play();
@@ -669,19 +702,27 @@ function switchRoomState(n) {
     usageBlocks.push(new component(15, 30, "rgba(0,0,0,0)", 200, 45, "usage5"));
     usageBlocks.push(new component(15, 30, "rgba(0,0,0,0)", 220, 45, "usage6"));
     texts.push(new component("15px", "PressStart2P", "white", 370, 60, "text", "Night 1"));
-    texts.push(new component("13px", "PressStart2P", "white", 30, 420, "text", "Press & Hold CTRL to use flashlight"));
+    if (checkPlatform() == 1) {
+      texts.push(new component("13px", "PressStart2P", "white", 37, 420, "text", "Press & Hold CMD to use flashlight"));
+    }
+    else if (checkPlatform() == 2) {
+      texts.push(new component("13px", "PressStart2P", "white", 30, 420, "text", "Press & Hold CTRL to use flashlight"));
+    }
+    else {
+      texts.push(new component("13px", "PressStart2P", "white", 30, 420, "text", "Press & Hold CTRL to use flashlight"));
+    }
     console.log("Night 1 Rendered");
     if (muteOn == true) {
-      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 5, "mute"))
-      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 38, "text", "Mute"))
+      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 10, "mute"))
+      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 43, "text", "Mute"))
     }
     if (callDone == false) {
       phoneCall1.currentTime = 0;
       phoneCall1.play();
       if (muteOn == false) {
         window.setTimeout(function() {
-          buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 5, "mute"))
-          texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 38, "text", "Mute"))
+          buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 10, "mute"))
+          texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 43, "text", "Mute"))
           muteOn = true;
         }, 1500);
         window.setTimeout(function() {
@@ -697,8 +738,15 @@ function switchRoomState(n) {
   }
   else if (n == roomStateID[3]) {
     state = roomStateID[3];
+    door1Light = false;
+    door1Close = false;
+    door2Light = false;
+    door2Close = false;
+    door3Light = false;
+    door3Close = false;
+    cameraState = false;
+    mouseOnCamera = false;
     gameOn = false;
-    callDone = false
     alarm.play();
     fan.pause();
     fan.currentTime = 0;
@@ -715,18 +763,25 @@ function switchRoomState(n) {
     texts.push(new component("25px", "PressStart2P", "white", 170, 230, "text", "5:59 AM"));
     window.setTimeout(function () {
       texts[0].text = "5:59 AM";
+      // console.log(texts[0]);
       window.setTimeout(function () {
         texts[0].text = " :   AM";
+        // console.log(texts[0]);
         window.setTimeout(function () {
           texts[0].text = "5:59 AM";
+          // console.log(texts[0]);
           window.setTimeout(function () {
             texts[0].text = " :   AM";
+            // console.log(texts[0]);
             window.setTimeout(function () {
               texts[0].text = "6:00 AM";
+              // console.log(texts[0]);
               window.setTimeout(function () {
                 texts[0].text = " :   AM";
+                // console.log(texts[0]);
                 window.setTimeout(function () {
                   texts[0].text = "6:00 AM";
+                  // console.log(texts[0]);
                 }, 500);
               }, 500);
             }, 500);
@@ -744,24 +799,40 @@ function switchRoomState(n) {
   else if (n == roomStateID[4]) {
     state = roomStateID[4];
     if (door1Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door1Light = false;
     if (door2Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door2Light = false;
     if (door3Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door3Light = false;
-    backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1Bedroom));
+    if (pelletRoomIn == pelletRoom[0]) {
+      if (phase == 1) {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1Bedroom));
+      }
+      else {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet2Bedroom));
+      }
+    }
+    else {
+      backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet3Bedroom));
+    }
     backgrounds.push(new component(0, 0, "#000", 0, 0, "image", camOverlay));
     staticCam.push(new component(0, 0, "#000", 0, 0, "image", staticEffect1));
     mapRender.push(new component(0, 0, "#000", 250, 180, "image", mapPic));
@@ -778,6 +849,8 @@ function switchRoomState(n) {
     usageBlocks.push(new component(15, 30, "rgba(0,0,0,0)", 200, 45, "usage5"));
     usageBlocks.push(new component(15, 30, "rgba(0,0,0,0)", 220, 45, "usage6"));
     texts.push(new component("15px", "PressStart2P", "white", 370, 60, "text", "Night 1"));
+    texts.push(new component("15px", "PressStart2P", "white", 240, 170, "text", "Bedroom"));
+
     buttons.push(new component(50, 30, "#69B331", 220, 220, "cam1"));
     texts.push(new component("10px", "PressStart2P", "white", 225, 240, "text", "CAM1"));
     buttons.push(new component(50, 30, "rgba(100,100,100,1)", 250, 280, "cam2"));
@@ -786,31 +859,37 @@ function switchRoomState(n) {
     texts.push(new component("10px", "PressStart2P", "white", 305, 370, "text", "CAM3"));
     buttons.push(new component(50, 30, "rgba(100,100,100,1)", 350, 320, "cam4"));
     texts.push(new component("10px", "PressStart2P", "white", 355, 340, "text", "CAM4"));
-    buttons.push(new component(50, 30, "rgba(100,100,100,1)", 435, 350, "cam5"));
-    texts.push(new component("10px", "PressStart2P", "white", 440, 370, "text", "CAM5"));
+    buttons.push(new component(50, 30, "rgba(100,100,100,1)", 405, 350, "cam5"));
+    texts.push(new component("10px", "PressStart2P", "white", 410, 370, "text", "CAM5"));
     texts.push(new component("10px", "PressStart2P", "white", 353, 400, "text", "YOU"));
     console.log("Bedroom Rendered");
     if (muteOn == true) {
-      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 5, "mute"))
-      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 38, "text", "Mute"))
+      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 10, "mute"))
+      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 43, "text", "Mute"))
     }
   }
   else if (n == roomStateID[5]) {
     state = roomStateID[5];
     if (door1Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door1Light = false;
     if (door2Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door2Light = false;
     if (door3Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
@@ -822,37 +901,50 @@ function switchRoomState(n) {
     buttons.push(new component(30, 30, "#000", 10, 200, "doorLight1"));
     doors.push(new component(180, 250, "#000", 160, 100, "door2"));
     desk.push(new component(0, 0, "#000", 150, 300, "image", deskNoPowerPic));
-    buttons.push(new component(30, 30, "#000", 240, 50, "doorClose2"));
+    buttons.push(new component(30, 30, "#000", 235, 330, "doorClose2"));
     doors.push(new component(80, 200, "#000", 370, 150, "door3"));
     buttons.push(new component(30, 30, "#000", 460, 260, "doorClose3"));
     buttons.push(new component(30, 30, "#000", 460, 200, "doorLight3"));
     console.log("Power Outage Rendered");
     if (muteOn == true) {
-      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 5, "mute"))
-      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 38, "text", "Mute"))
+      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 10, "mute"))
+      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 43, "text", "Mute"))
     }
   }
   else if (n == roomStateID[6]) {
     state = roomStateID[6];
     if (door1Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door1Light = false;
     if (door2Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door2Light = false;
     if (door3Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door3Light = false;
-    backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1MainHall));
+    if (pelletRoomIn == pelletRoom[1]) {
+      if (phase == 1) {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet2MainHall));
+      }
+    }
+    else {
+      backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1MainHall));
+    }
     backgrounds.push(new component(0, 0, "#000", 0, 0, "image", camOverlay));
     staticCam.push(new component(0, 0, "#000", 0, 0, "image", staticEffect1));
     mapRender.push(new component(0, 0, "#000", 250, 180, "image", mapPic));
@@ -869,6 +961,7 @@ function switchRoomState(n) {
     usageBlocks.push(new component(15, 30, "rgba(0,0,0,0)", 200, 45, "usage5"));
     usageBlocks.push(new component(15, 30, "rgba(0,0,0,0)", 220, 45, "usage6"));
     texts.push(new component("15px", "PressStart2P", "white", 370, 60, "text", "Night 1"));
+    texts.push(new component("15px", "PressStart2P", "white", 240, 170, "text", "Living Room"));
 
     buttons.push(new component(50, 30, "rgba(100,100,100,1)", 220, 220, "cam1"));
     texts.push(new component("10px", "PressStart2P", "white", 225, 240, "text", "CAM1"));
@@ -878,36 +971,55 @@ function switchRoomState(n) {
     texts.push(new component("10px", "PressStart2P", "white", 305, 370, "text", "CAM3"));
     buttons.push(new component(50, 30, "rgba(100,100,100,1)", 350, 320, "cam4"));
     texts.push(new component("10px", "PressStart2P", "white", 355, 340, "text", "CAM4"));
-    buttons.push(new component(50, 30, "rgba(100,100,100,1)", 435, 350, "cam5"));
-    texts.push(new component("10px", "PressStart2P", "white", 440, 370, "text", "CAM5"));
+    buttons.push(new component(50, 30, "rgba(100,100,100,1)", 405, 350, "cam5"));
+    texts.push(new component("10px", "PressStart2P", "white", 410, 370, "text", "CAM5"));
     texts.push(new component("10px", "PressStart2P", "white", 353, 400, "text", "YOU"));
     console.log("Main Hall Rendered");
     if (muteOn == true) {
-      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 5, "mute"))
-      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 38, "text", "Mute"))
+      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 10, "mute"))
+      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 43, "text", "Mute"))
     }
   }
   else if (n == roomStateID[7]) {
     state = roomStateID[7];
     if (door1Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door1Light = false;
     if (door2Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door2Light = false;
     if (door3Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door3Light = false;
-    backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1LeftHall));
+    if (pelletRoomIn == pelletRoom[2]) {
+      if (phase == 1) {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet2LeftHall));
+      }
+      else if (phase == 2) {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet3LeftHall));
+      }
+      else if (phase == 3) {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet3LeftHall));
+      }
+    }
+    else {
+      backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1LeftHall));
+    }
     backgrounds.push(new component(0, 0, "#000", 0, 0, "image", camOverlay));
     staticCam.push(new component(0, 0, "#000", 0, 0, "image", staticEffect1));
     mapRender.push(new component(0, 0, "#000", 250, 180, "image", mapPic));
@@ -924,6 +1036,7 @@ function switchRoomState(n) {
     usageBlocks.push(new component(15, 30, "rgba(0,0,0,0)", 200, 45, "usage5"));
     usageBlocks.push(new component(15, 30, "rgba(0,0,0,0)", 220, 45, "usage6"));
     texts.push(new component("15px", "PressStart2P", "white", 370, 60, "text", "Night 1"));
+    texts.push(new component("15px", "PressStart2P", "white", 240, 170, "text", "Left Hall"));
 
     buttons.push(new component(50, 30, "rgba(100,100,100,1)", 220, 220, "cam1"));
     texts.push(new component("10px", "PressStart2P", "white", 225, 240, "text", "CAM1"));
@@ -933,36 +1046,52 @@ function switchRoomState(n) {
     texts.push(new component("10px", "PressStart2P", "white", 305, 370, "text", "CAM3"));
     buttons.push(new component(50, 30, "rgba(100,100,100,1)", 350, 320, "cam4"));
     texts.push(new component("10px", "PressStart2P", "white", 355, 340, "text", "CAM4"));
-    buttons.push(new component(50, 30, "rgba(100,100,100,1)", 435, 350, "cam5"));
-    texts.push(new component("10px", "PressStart2P", "white", 440, 370, "text", "CAM5"));
+    buttons.push(new component(50, 30, "rgba(100,100,100,1)", 405, 350, "cam5"));
+    texts.push(new component("10px", "PressStart2P", "white", 410, 370, "text", "CAM5"));
     texts.push(new component("10px", "PressStart2P", "white", 353, 400, "text", "YOU"));
     console.log("Left Hall Rendered");
     if (muteOn == true) {
-      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 5, "mute"))
-      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 38, "text", "Mute"))
+      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 10, "mute"))
+      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 43, "text", "Mute"))
     }
   }
   else if (n == roomStateID[8]) {
     state = roomStateID[8];
     if (door1Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door1Light = false;
     if (door2Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door2Light = false;
     if (door3Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door3Light = false;
-    backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1MiddleHall));
+    if (pelletRoomIn == pelletRoom[3]) {
+      if (phase == 1) {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet2MiddleHall));
+      }
+      else if (phase == 2) {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet3MiddleHall));
+      }
+    }
+    else {
+      backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1MiddleHall));
+    }
     backgrounds.push(new component(0, 0, "#000", 0, 0, "image", camOverlay));
     staticCam.push(new component(0, 0, "#000", 0, 0, "image", staticEffect1));
     mapRender.push(new component(0, 0, "#000", 250, 180, "image", mapPic));
@@ -979,6 +1108,7 @@ function switchRoomState(n) {
     usageBlocks.push(new component(15, 30, "rgba(0,0,0,0)", 200, 45, "usage5"));
     usageBlocks.push(new component(15, 30, "rgba(0,0,0,0)", 220, 45, "usage6"));
     texts.push(new component("15px", "PressStart2P", "white", 370, 60, "text", "Night 1"));
+    texts.push(new component("15px", "PressStart2P", "white", 240, 170, "text", "Middle Hall"));
 
     buttons.push(new component(50, 30, "rgba(100,100,100,1)", 220, 220, "cam1"));
     texts.push(new component("10px", "PressStart2P", "white", 225, 240, "text", "CAM1"));
@@ -988,36 +1118,55 @@ function switchRoomState(n) {
     texts.push(new component("10px", "PressStart2P", "white", 305, 370, "text", "CAM3"));
     buttons.push(new component(50, 30, "#69B331", 350, 320, "cam4"));
     texts.push(new component("10px", "PressStart2P", "white", 355, 340, "text", "CAM4"));
-    buttons.push(new component(50, 30, "rgba(100,100,100,1)", 435, 350, "cam5"));
-    texts.push(new component("10px", "PressStart2P", "white", 440, 370, "text", "CAM5"));
+    buttons.push(new component(50, 30, "rgba(100,100,100,1)", 405, 350, "cam5"));
+    texts.push(new component("10px", "PressStart2P", "white", 410, 370, "text", "CAM5"));
     texts.push(new component("10px", "PressStart2P", "white", 353, 400, "text", "YOU"));
     console.log("Middle Hall Rendered");
     if (muteOn == true) {
-      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 5, "mute"))
-      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 38, "text", "Mute"))
+      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 10, "mute"))
+      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 43, "text", "Mute"))
     }
   }
   else if (n == roomStateID[9]) {
     state = roomStateID[9];
     if (door1Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door1Light = false;
     if (door2Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door2Light = false;
     if (door3Light == true) {
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       light.pause();
       light.currentTime = 0;
     }
     door3Light = false;
-    backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1RightHall));
+    if (pelletRoomIn == pelletRoom[4]) {
+      if (phase == 1) {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet2RightHall));
+      }
+      else if (phase == 2) {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet3RightHall));
+      }
+      else if (phase == 3) {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet4RightHall));
+      }
+    }
+    else {
+      backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1RightHall));
+    }
     backgrounds.push(new component(0, 0, "#000", 0, 0, "image", camOverlay));
     staticCam.push(new component(0, 0, "#000", 0, 0, "image", staticEffect1));
     mapRender.push(new component(0, 0, "#000", 250, 180, "image", mapPic));
@@ -1034,6 +1183,7 @@ function switchRoomState(n) {
     usageBlocks.push(new component(15, 30, "rgba(0,0,0,0)", 200, 45, "usage5"));
     usageBlocks.push(new component(15, 30, "rgba(0,0,0,0)", 220, 45, "usage6"));
     texts.push(new component("15px", "PressStart2P", "white", 370, 60, "text", "Night 1"));
+    texts.push(new component("15px", "PressStart2P", "white", 240, 170, "text", "Right Hall"));
 
     buttons.push(new component(50, 30, "rgba(100,100,100,1)", 220, 220, "cam1"));
     texts.push(new component("10px", "PressStart2P", "white", 225, 240, "text", "CAM1"));
@@ -1043,13 +1193,13 @@ function switchRoomState(n) {
     texts.push(new component("10px", "PressStart2P", "white", 305, 370, "text", "CAM3"));
     buttons.push(new component(50, 30, "rgba(100,100,100,1)", 350, 320, "cam4"));
     texts.push(new component("10px", "PressStart2P", "white", 355, 340, "text", "CAM4"));
-    buttons.push(new component(50, 30, "#69B331", 435, 350, "cam5"));
-    texts.push(new component("10px", "PressStart2P", "white", 440, 370, "text", "CAM5"));
+    buttons.push(new component(50, 30, "#69B331", 405, 350, "cam5"));
+    texts.push(new component("10px", "PressStart2P", "white", 410, 370, "text", "CAM5"));
     texts.push(new component("10px", "PressStart2P", "white", 353, 400, "text", "YOU"));
     console.log("Right Hall Rendered");
     if (muteOn == true) {
-      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 5, "mute"))
-      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 38, "text", "Mute"))
+      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 10, "mute"))
+      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 43, "text", "Mute"))
     }
   }
 }
@@ -1060,30 +1210,47 @@ function doorLight(n) {
       door1Light = true
       doors[0].color = "#333";
       usage = usage + 1;
+      if (pelletRoomIn == pelletRoom[2]) {
+        if (phase == 4) {
+          pelletDoor.push(new component(0, 0, "#000", 45, 185, "image", doorPellet1));
+        }
+      }
       light.play();
+      window.setTimeout(function() {
+        if (door1Light == true) {
+          door1Light = false
+          doors[0].color = "#000"
+          if (usage > 1) {
+            usage = usage - 1;
+          }
+          pelletDoor = [];
+          light.pause();
+          light.currentTime = 0;
+        }
+      }, 2000);
     }
     else if (door1Light == true) {
       door1Light = false
       doors[0].color = "#000"
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
+      pelletDoor = [];
       light.pause();
       light.currentTime = 0;
     }
-    window.setTimeout(function() {
-      if (door1Light == true) {
-        door1Light = false
-        doors[0].color = "#000"
-        usage = usage - 1;
-        light.pause();
-        light.currentTime = 0;
-      }
-    }, 2000);
   }
   else if (n == 2) {
+    if (pelletRoomIn == pelletRoom[3]) {
+      if (phase == 3) {
+        pelletDoor.push(new component(0, 0, "#000", 205, 155, "image", doorPellet2));
+      }
+    }
     door2Light = true
     doors[1].color = "#333";
   }
   else if (n == 3) {
+    pelletDoor = [];
     door2Light = false
     doors[1].color = "#000"
   }
@@ -1091,25 +1258,36 @@ function doorLight(n) {
     if (door3Light == false) {
       door3Light = true
       usage = usage + 1;
+      if (pelletRoomIn == pelletRoom[4]) {
+        if (phase == 4) {
+          pelletDoor.push(new component(0, 0, "#000", 365, 185, "image", doorPellet3));
+        }
+      }
       light.play()
       doors[2].color = "#333";
+      window.setTimeout(function() {
+        if (door3Light == true) {
+          door3Light = false
+          doors[2].color = "#000"
+          if (usage > 1) {
+            usage = usage - 1;
+          }
+          pelletDoor = [];
+          light.pause();
+          light.currentTime = 0;
+        }
+      }, 2000);
     }
     else if (door3Light == true) {
       door3Light = false
       doors[2].color = "#000"
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
+      pelletDoor = [];
       light.pause();
       light.currentTime = 0;
     }
-    window.setTimeout(function() {
-      if (door3Light == true) {
-        door3Light = false
-        doors[2].color = "#000"
-        usage = usage - 1;
-        light.pause();
-        light.currentTime = 0;
-      }
-    }, 2000);
   }
 }
 function doorClose(n) {
@@ -1124,7 +1302,9 @@ function doorClose(n) {
     else if (door1Close == true) {
       door1Close = false;
       doorCovers[0].color = "rgba(0,0,0,0)";
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       garageOpen.currentTime = 0;
       garageOpen.play()
     }
@@ -1140,7 +1320,9 @@ function doorClose(n) {
     else if (door2Close == true) {
       door2Close = false;
       doorCovers[1].color = "rgba(0,0,0,0)";
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       garageOpen.currentTime = 0;
       garageOpen.play()
     }
@@ -1156,7 +1338,9 @@ function doorClose(n) {
     else if (door3Close == true) {
       door3Close = false;
       doorCovers[2].color = "rgba(0,0,0,0)";
-      usage = usage - 1;
+      if (usage > 1) {
+        usage = usage - 1;
+      }
       garageOpen.currentTime = 0;
       garageOpen.play()
     }
@@ -1168,7 +1352,7 @@ function switchCameraState(n) {
     console.log("Camera Up Rendered");
     cameraState = true;
     usage = usage + 1;
-    console.log(currentCam);
+    // console.log(currentCam);
     if (currentCam == roomStateID[4]) {
       switchRoomState(roomStateID[4]);
     }
@@ -1189,7 +1373,9 @@ function switchCameraState(n) {
   else if (n == 0) {
     console.log("Camera Down Rendered");
     cameraState = false;
-    usage = usage - 1;
+    if (usage > 1) {
+      usage = usage - 1;
+    }
     switchRoomState(roomStateID[2]);
   }
 }
@@ -1240,29 +1426,424 @@ function changeTime() {
   }
 }
 
+function move() {
+  if(dead == false){
+    if (moveTime==11){
+      if (pelletRoomIn==pelletRoom[0]){
+        if (phase==1){
+            phase = 2
+            if (state == roomStateID[4]) {
+              backgrounds.splice(0,1);
+              console.log("SPLICE");
+              window.setTimeout(function() {
+                if (state == roomStateID[4]) {
+                  backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet2Bedroom));
+                }
+              }, 1000);
+            }
+        }
+        else if (phase==2){
+            pelletRoomIn=pelletRoom[1]
+            phase = 1
+            if (state == roomStateID[4]) {
+              backgrounds.splice(0,1);
+              console.log("SPLICE");
+              window.setTimeout(function() {
+                if (state == roomStateID[4]) {
+                  backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet3Bedroom));
+                }
+              }, 1000);
+            }
+            if (state == roomStateID[6]) {
+              backgrounds.splice(0,1);
+              console.log("SPLICE");
+              window.setTimeout(function() {
+                if (state == roomStateID[6]) {
+                  backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet2MainHall));
+                }
+              }, 1000);
+            }
+        }
+      }
+      else if (pelletRoomIn==pelletRoom[1]){
+        if (phase==1){
+          // pelletRoomIn=pelletRoom[2];
+          // pelletRoomIn=pelletRoom[3];
+          // pelletRoomIn=pelletRoom[4];
+          var randomNum = Math.floor((Math.random() * 3) + 2);
+          pelletRoomIn=pelletRoom[randomNum];
+          phase = 1
+          if (state == roomStateID[6]) {
+            backgrounds.splice(0,1);
+            console.log("SPLICE");
+            window.setTimeout(function() {
+              if (state == roomStateID[6]) {
+                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1MainHall));
+              }
+            }, 1000);
+          }
+          if (pelletRoomIn == pelletRoom[2]) {
+            if (state == roomStateID[7]) {
+              backgrounds.splice(0,1);
+              console.log("SPLICE");
+              window.setTimeout(function() {
+                if (state == roomStateID[7]) {
+                  backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet2LeftHall));
+                }
+              }, 1000);
+            }
+          }
+          if (pelletRoomIn == pelletRoom[3]) {
+            if (state == roomStateID[8]) {
+              backgrounds.splice(0,1);
+              console.log("SPLICE");
+              window.setTimeout(function() {
+                if (state == roomStateID[8]) {
+                  backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet2MiddleHall));
+                }
+              }, 1000);
+            }
+          }
+          if (pelletRoomIn == pelletRoom[4]) {
+            if (state == roomStateID[9]) {
+              backgrounds.splice(0,1);
+              console.log("SPLICE");
+              window.setTimeout(function() {
+                if (state == roomStateID[9]) {
+                  backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet2RightHall));
+                }
+              }, 1000);
+            }
+          }
+          if (state == roomStateID[6]) {
+            backgrounds.splice(0, 1);
+            console.log("SPLICE");
+            window.setTimeout(function () {
+              if (state == roomStateID[6]) {
+                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1MainHall));
+              }
+            }, 1000);
+          }
+        }
+      }
+      else if (pelletRoomIn==pelletRoom[2]){
+        if (phase==1){
+          pelletRoomIn=pelletRoom[2]
+          phase = 2
+          if (state == roomStateID[7]) {
+            backgrounds.splice(0,1);
+            console.log("SPLICE");
+            window.setTimeout(function() {
+              if (state == roomStateID[7]) {
+                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet3LeftHall));
+              }
+            }, 1000);
+          }
+        }
+        else if (phase==2){
+          pelletRoomIn=pelletRoom[2]
+          phase = 3
+          if (state == roomStateID[7]) {
+            backgrounds.splice(0,1);
+            console.log("SPLICE");
+            window.setTimeout(function() {
+              if (state == roomStateID[7]) {
+                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet4LeftHall));
+              }
+            }, 1000);
+          }
+        }
+        // else if (phase==3){
+        //   pelletRoomIn=pelletRoom[0]
+        //   phase = 1
+        //   if (state == roomStateID[7]) {
+        //     backgrounds.splice(0,1);
+        //     console.log("SPLICE");
+        //     window.setTimeout(function() {
+        //       if (state == roomStateID[7]) {
+        //         backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1LeftHall));
+        //       }
+        //     }, 1000);
+        //   }
+        //   if (state == roomStateID[4]) {
+        //     backgrounds.splice(0,1);
+        //     console.log("SPLICE");
+        //     window.setTimeout(function() {
+        //       if (state == roomStateID[4]) {
+        //         backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1Bedroom));
+        //       }
+        //     }, 1000);
+        //   }
+        // }
+        else if (phase==3){
+          pelletRoomIn=pelletRoom[2]
+          phase = 4
+          if (state == roomStateID[7]) {
+            backgrounds.splice(0,1);
+            console.log("SPLICE");
+            window.setTimeout(function() {
+              if (state == roomStateID[7]) {
+                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1LeftHall));
+              }
+            }, 1000);
+          }
+          if (state == roomStateID[2]) {
+            if (door1Light == true)
+              doorLight(1);
+            console.log("lol");
+          }
+        }
+        else if (phase==4){
+          pelletRoomIn=pelletRoom[0]
+          phase = 1
+          if (state == roomStateID[4]) {
+            backgrounds.splice(0,1);
+            console.log("SPLICE");
+            window.setTimeout(function() {
+              if (state == roomStateID[4]) {
+                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1Bedroom));
+              }
+            }, 1000);
+          }
+          if (state == roomStateID[2]) {
+            if (door1Light == true)
+              doorLight(1);
+            console.log("lol");
+          }
+        }
+      }
+      else if (pelletRoomIn==pelletRoom[3]){
+        if (phase==1){
+          pelletRoomIn=pelletRoom[3]
+          phase = 2
+          if (state == roomStateID[8]) {
+            backgrounds.splice(0,1);
+            console.log("SPLICE");
+            window.setTimeout(function() {
+              if (state == roomStateID[8]) {
+                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet3MiddleHall));
+              }
+            }, 1000);
+          }
+        }
+        else if (phase==2){
+          pelletRoomIn=pelletRoom[3]
+          phase = 3
+          if (state == roomStateID[8]) {
+            backgrounds.splice(0,1);
+            console.log("SPLICE");
+            window.setTimeout(function() {
+              if (state == roomStateID[8]) {
+                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1MiddleHall));
+              }
+            }, 1000);
+          }
+          if (state == roomStateID[2]) {
+            if (door2Light == true)
+              doorLight(3);
+            console.log("lol");
+          }
+        }
+        else if (phase==3){
+          pelletRoomIn=pelletRoom[0]
+          phase = 1
+          if (state == roomStateID[4]) {
+            backgrounds.splice(0,1);
+            console.log("SPLICE");
+            window.setTimeout(function() {
+              if (state == roomStateID[4]) {
+                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1Bedroom));
+              }
+            }, 1000);
+          }
+          if (state == roomStateID[2]) {
+            if (door2Light == true)
+              doorLight(3);
+            console.log("lol");
+          }
+        }
+      }
+      else if (pelletRoomIn==pelletRoom[4]){
+        if (phase==1){
+          pelletRoomIn=pelletRoom[4]
+          phase = 2
+          if (state == roomStateID[9]) {
+            backgrounds.splice(0,1);
+            console.log("SPLICE");
+            window.setTimeout(function() {
+              if (state == roomStateID[9]) {
+                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet3RightHall));
+              }
+            }, 1000);
+          }
+        }
+        else if (phase==2){
+          pelletRoomIn=pelletRoom[4]
+          phase = 3
+          if (state == roomStateID[9]) {
+            backgrounds.splice(0,1);
+            console.log("SPLICE");
+            window.setTimeout(function() {
+              if (state == roomStateID[9]) {
+                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet4RightHall));
+              }
+            }, 1000);
+          }
+        }
+        else if (phase==3){
+          pelletRoomIn=pelletRoom[4]
+          phase = 4
+          if (state == roomStateID[9]) {
+            backgrounds.splice(0,1);
+            console.log("SPLICE");
+            window.setTimeout(function() {
+              if (state == roomStateID[9]) {
+                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1RightHall));
+              }
+            }, 1000);
+          }
+          if (state == roomStateID[2]) {
+            if (door3Light == true)
+              doorLight(4);
+            console.log("lol");
+          }
+        }
+        else if (phase==4){
+          pelletRoomIn=pelletRoom[0]
+          phase = 1
+          if (state == roomStateID[4]) {
+            backgrounds.splice(0,1);
+            console.log("SPLICE");
+            window.setTimeout(function() {
+              if (state == roomStateID[4]) {
+                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1Bedroom));
+              }
+            }, 1000);
+          }
+          if (state == roomStateID[2]) {
+            if (door3Light == true)
+              doorLight(4);
+            console.log("lol");
+          }
+        }
+      }
+      if (pelletRoomIn==pelletRoom[5]){
+          console.log("You are dead. Not big suprise.")
+          dead = true
+      }
+
+      console.log("Phase "+phase);
+      console.log("Is in",pelletRoomIn)
+      moveTime=0
+    }
+
+    seconds=seconds+1
+    moveTime=moveTime+1
+  }
+}
+
+// import dataJSON from '/data.js';
+// import dataJSON from '/data.json';
+// var data = JSON.parse(dataJSON);
+// var dataJSON = document.getElementById('data');
+var dataOrder = 0;
+// console.log(dataJSON)
+
 document.onkeydown = checkKey;
 document.onkeyup = stopKey;
 
 function checkKey(e) {
-    key = e || window.event;
+  key = e || window.event;
+  if (checkPlatform() == 1) {
+    // console.log('MAC');
+    if (key.keyCode == '91') {
+      if (state == roomStateID[2]) {
+        doorLight(2);
+      }
+    }
+  } else if (checkPlatform() == 2) {
+    // console.log('PC');
     if (key.keyCode == '17') {
       if (state == roomStateID[2]) {
         doorLight(2);
       }
     }
-
+  }
+  if (state == roomStateID[0]) {
+    if (key.keyCode == '83' && dataOrder == 0) {
+      dataOrder++;
+    }
+    else if (key.keyCode == '67' && dataOrder == 1) {
+      dataOrder++;
+    }
+    else if (key.keyCode == '65' && dataOrder == 2) {
+      dataOrder++;
+    }
+    else if (key.keyCode == '82' && dataOrder == 3) {
+      dataOrder++;
+    }
+    else if (key.keyCode == '89' && dataOrder == 4) {
+      dataOrder++;
+    }
+    else {
+      dataOrder = 0;
+    }
+  }
 }
 
 function stopKey(e) {
-    key = e || window.event;
-   if (key.keyCode == '17') {
-     if (state == roomStateID[2]) {
-       doorLight(3);
-     }
+  key = e || window.event;
+  
+  if (checkPlatform() == 1) {
+    // console.log('MAC');
+    if (key.keyCode == '91') {
+      if (state == roomStateID[2]) {
+        doorLight(3);
+      }
     }
+  } else if (checkPlatform() == 2) {
+    // console.log('PC');
+    if (key.keyCode == '17') {
+      if (state == roomStateID[2]) {
+        doorLight(3);
+      }
+    }
+  }
 }
 
 start.onclick = function() {
-  dead = false
   startGame()
 }
+
+function checkPlatform() {
+  var isMac = navigator.userAgent.toUpperCase().includes('MAC')
+  var isPC = navigator.userAgent.toUpperCase().includes('WIN')
+  if (isMac == true) {
+    // console.log('Is MAC');
+    return 1
+  } else if (isPC == true) {
+    // console.log('Is PC');
+    return 2
+  } else {
+    // console.log("I don't know");
+    return 3
+  }
+}
+
+// function checkAgent() {
+//   var isFirefox = navigator.userAgent.toUpperCase().includes('FIREFOX')
+//   var isWebKit = navigator.userAgent.toUpperCase().includes('WEBKIT')
+//   if (isWebKit == true) {
+//     console.log('Is WebKit');
+//     return 1
+//   } else if (isFirefox == true) {
+//     console.log('Is Firefox');
+//     return 2
+//   }
+//   else {
+//     console.log("I don't know");
+//     return 3
+//   }
+// }
+// console.log(navigator.userAgent.toUpperCase());
+// checkAgent()
