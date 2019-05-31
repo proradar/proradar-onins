@@ -53,6 +53,7 @@ img {
   height: 25px;
   margin-left: 0px;
   margin-top: 0px;
+  margin-bottom: 10px;
   border-color: #0f0;
   border-width: 3px;
   border-style: solid;
@@ -63,4 +64,7 @@ img {
   color: #00ff00;
   margin-top: 5px;
   font-size: 10px;
+}
+#jumpscare {
+  display: none;
 }

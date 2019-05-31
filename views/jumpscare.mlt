@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mlt LC_NUMERIC="C" version="6.9.0" title="Shotcut version 18.06.02" producer="main bin">
+  <profile description="automatic" width="800" height="600" progressive="1" sample_aspect_num="1" sample_aspect_den="1" display_aspect_num="800" display_aspect_den="600" frame_rate_num="12" frame_rate_den="1" colorspace="601"/>
+  <playlist id="main bin">
+    <property name="xml_retain">1</property>
+  </playlist>
+  <producer id="black" in="00:00:00.000" out="00:00:00.333">
+    <property name="length">00:00:00.417</property>
+    <property name="eof">pause</property>
+    <property name="resource">//black</property>
+    <property name="aspect_ratio">1</property>
+    <property name="mlt_service">color</property>
+    <property name="set.test_audio">0</property>
+  </producer>
+  <playlist id="background">
+    <entry producer="black" in="00:00:00.000" out="00:00:00.333"/>
+  </playlist>
+  <producer id="producer0" title="Anonymous Submission" in="00:00:00.000" out="00:00:00.333">
+    <property name="length">04:00:00.000</property>
+    <property name="eof">pause</property>
+    <property name="resource">transparent.png</property>
+    <property name="ttl">1</property>
+    <property name="aspect_ratio">1</property>
+    <property name="progressive">1</property>
+    <property name="seekable">1</property>
+    <property name="mlt_service">qimage</property>
+    <property name="shotcut:hash">097b1501cd8cca8337702e7183a2ac91</property>
+    <property name="ignore_points">0</property>
+    <property name="global_feed">1</property>
+    <property name="xml">was here</property>
+  </producer>
+  <playlist id="playlist0">
+    <property name="shotcut:video">1</property>
+    <property name="shotcut:name">V1</property>
+    <entry producer="producer0" in="00:00:00.000" out="00:00:00.333"/>
+  </playlist>
+  <producer id="producer1" title="Anonymous Submission" in="00:00:00.000" out="00:00:00.333">
+    <property name="length">00:00:00.417</property>
+    <property name="eof">pause</property>
+    <property name="resource">pellet_jumpscare.mp4</property>
+    <property name="seekable">1</property>
+    <property name="aspect_ratio">1</property>
+    <property name="audio_index">-1</property>
+    <property name="video_index">0</property>
+    <property name="mute_on_pause">1</property>
+    <property name="mlt_service">avformat</property>
+    <property name="video_delay">0</property>
+    <property name="shotcut:hash">89e44095eceb95859cd616e295f03cc0</property>
+    <property name="shotcut:skipConvert">1</property>
+    <property name="global_feed">1</property>
+    <property name="xml">was here</property>
+    <property name="shotcut:caption">pellet_jumpscare.mp4</property>
+    <property name="shotcut:detail">pellet_jumpscare.mp4</property>
+    <property name="shotcut:comment"></property>
+    <filter id="filter1" out="00:00:00.333">
+      <property name="version">0.3</property>
+      <property name="mlt_service">frei0r.bluescreen0r</property>
+      <property name="0">#0101f5</property>
+      <property name="1">0.288</property>
+      <property name="shotcut:animIn">0</property>
+      <property name="shotcut:animOut">0</property>
+    </filter>
+    <filter id="filter2" out="00:00:00.333">
+      <property name="start">1</property>
+      <property name="level">1</property>
+      <property name="mlt_service">brightness</property>
+      <property name="shotcut:filter">brightnessOpacity</property>
+      <property name="alpha">1</property>
+      <property name="opacity">1</property>
+    </filter>
+  </producer>
+  <playlist id="playlist1">
+    <property name="shotcut:video">1</property>
+    <property name="shotcut:name">V2</property>
+    <entry producer="producer1" in="00:00:00.000" out="00:00:00.333"/>
+  </playlist>
+  <tractor id="tractor0" title="Shotcut version 18.06.02" global_feed="1" in="00:00:00.000" out="00:00:00.333">
+    <property name="shotcut">1</property>
+    <property name="shotcut:scaleFactor">27.01</property>
+    <property name="shotcut:projectAudioChannels">2</property>
+    <track producer="background"/>
+    <track producer="playlist0"/>
+    <track producer="playlist1"/>
+    <transition id="transition0">
+      <property name="a_track">0</property>
+      <property name="b_track">1</property>
+      <property name="mlt_service">mix</property>
+      <property name="always_active">1</property>
+      <property name="sum">1</property>
+    </transition>
+    <transition id="transition1">
+      <property name="a_track">0</property>
+      <property name="b_track">1</property>
+      <property name="version">0.9</property>
+      <property name="mlt_service">frei0r.cairoblend</property>
+      <property name="disable">1</property>
+    </transition>
+    <transition id="transition2">
+      <property name="a_track">0</property>
+      <property name="b_track">2</property>
+      <property name="mlt_service">mix</property>
+      <property name="always_active">1</property>
+      <property name="sum">1</property>
+    </transition>
+    <transition id="transition3">
+      <property name="a_track">1</property>
+      <property name="b_track">2</property>
+      <property name="version">0.9</property>
+      <property name="mlt_service">frei0r.cairoblend</property>
+      <property name="disable">0</property>
+    </transition>
+  </tractor>
+</mlt>

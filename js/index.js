@@ -1,3 +1,11 @@
+/*
+MOTIVATION: Great, almost finished!
+REMINDER: 1) Game Over
+REMINDER: 2) Animation for jumpscare
+REMINDER: 3) Death sound
+REMINDER: 4) Jumpscare
+*/
+
 // Menu
 var pellet1 = document.getElementById("pellet1");
 var pellet2 = document.getElementById("pellet2");
@@ -31,12 +39,13 @@ var pellet1RightHall = document.getElementById("pellet1RightHall");
 var pellet2RightHall = document.getElementById("pellet2RightHall");
 var pellet3RightHall = document.getElementById("pellet3RightHall");
 var pellet4RightHall = document.getElementById("pellet4RightHall");
+var jumpscareVid = document.getElementById("jumpscare");
 
 // ID
 var buttonID = ["newGame", "continueGame", "doorLight1", "doorClose1", "doorClose2", "doorLight3", "doorClose3", "camButton","cam1","cam2","cam3","cam4","cam5","mute"]
 var doorID = ["door1", "door2", "door3"]
 // var doorStateID = ["openDoor1", "closeDoor1", "openLight1", "closeLight1", "closeDoor2", "openLight2", "closeLight2", "openDoor3", "closeDoor3", "openLight3", "closeLight3"]
-var roomStateID = ["menu", "night1Transition", "night1", "night1End", "bedroom", "powerOutage", "mainHall", "leftHall", "middleHall", "rightHall"]
+var roomStateID = ["menu", "night1Transition", "night1", "night1End", "bedroom", "powerOutage", "mainHall", "leftHall", "middleHall", "rightHall", "death", "gameOver"]
 var state;
 // Pellet
 var pelletRoom = ['Bedroom','MainArea','LeftHall','MiddleHall','RightHall','Office']
@@ -60,6 +69,9 @@ var cam = [];
 var currentCam;
 var usageBlocks = [];
 var mapRender = [];
+var jumpscare = [];
+var data = false;
+var deathActivate = false;
 var door1Light = false;
 var door1Close = false;
 var door2Light = false;
@@ -85,8 +97,9 @@ var garageOpen = new Audio('garage_open.wav');
 var garageClose = new Audio('garage_close.wav');
 var phoneCall1 = new Audio('night1PhoneCall.wav');
 var alarm = new Audio('alarm.wav');
+var day = new Audio('fnaf4.wav');
 /*
-Note: Make sure to credit MySoundEffect.com for telephone ring and Soundjay.com for telephone pickup/hangup!
+REMINDER: Make sure to credit MySoundEffect.com for telephone ring and Soundjay.com for telephone pickup/hangup!
 */
 
 function startGame() {
@@ -178,81 +191,52 @@ function component(width, height, color, x, y, type, text) {
     this.update = function() {
         ctx = myGameArea.context;
         if (this.type == "text") {
-            ctx.font = this.width + " " + this.height;
-            ctx.fillStyle = this.color;
-            ctx.fillText(this.text, this.x, this.y);
+          ctx.font = this.width + " " + this.height;
+          ctx.fillStyle = this.color;
+          ctx.fillText(this.text, this.x, this.y);
         }
         else if (this.type == "image") {
-            ctx.drawImage(this.text, this.x, this.y);
-        } else {
-            ctx.fillStyle = this.color;
-            ctx.fillRect(this.x, this.y, this.width, this.height);
+          ctx.drawImage(this.text, this.x, this.y);
         }
-    }
-    this.newPos = function() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        this.hitBottom();
-    }
-    this.hitBottom = function() {
-        var bottom = myGameArea.canvas.height - this.height;
-        var top = 0;
-        var right = myGameArea.canvas.width - this.width;
-        var left = 0;
-        if (this.y > bottom) {
-            this.y = bottom;
+        else if (this.type == 'video') {
+          ctx.drawImage(this.text, this.x, this.y, this.width, this.height);
         }
-        if (this.y < top) {
-            this.y = top;
+        else {
+          ctx.fillStyle = this.color;
+          ctx.fillRect(this.x, this.y, this.width, this.height);
         }
-        if (this.x < left) {
-            this.x = left;
-        }
-        if (this.x > right) {
-            this.x = right;
-        }
-    }
-    this.crashWith = function(otherobj) {
-        var myleft = this.x;
-        var myright = this.x + (this.width);
-        var mytop = this.y;
-        var mybottom = this.y + (this.height);
-        var otherleft = otherobj.x;
-        var otherright = otherobj.x + (otherobj.width);
-        var othertop = otherobj.y;
-        var otherbottom = otherobj.y + (otherobj.height);
-        var crash = true;
-        if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
-            crash = false;
-        }
-        return crash;
     }
 }
 
 function updateGameArea() {
-  if (dead == false) {
-
-    var x, height, gap, minHeight, maxHeight, minGap, maxGap;
-    myGameArea.clear();
-    myGameArea.frameNo += 1;
-    if (myGameArea.frameNo == 1 || everyinterval(1)) {
-      for (var i = 0; i < staticCam.length; i++) {
-        if (staticCam[i].text == staticEffect1) {
-          staticCam[i].text = staticEffect2;
-        }
-        else if (staticCam[i].text == staticEffect2) {
-          staticCam[i].text = staticEffect3;
-        }
-        else if (staticCam[i].text == staticEffect3) {
-          staticCam[i].text = staticEffect4;
-        }
-        else if (staticCam[i].text == staticEffect4) {
-          staticCam[i].text = staticEffect1;
-        }
+  myGameArea.clear();
+  myGameArea.frameNo += 1;
+  if (myGameArea.frameNo == 1 || everyinterval(1)) {
+    for (var i = 0; i < staticCam.length; i++) {
+      if (staticCam[i].text == staticEffect1) {
+        staticCam[i].text = staticEffect2;
+      }
+      else if (staticCam[i].text == staticEffect2) {
+        staticCam[i].text = staticEffect3;
+      }
+      else if (staticCam[i].text == staticEffect3) {
+        staticCam[i].text = staticEffect4;
+      }
+      else if (staticCam[i].text == staticEffect4) {
+        staticCam[i].text = staticEffect1;
       }
     }
-    if (state == roomStateID[0]) {
-      // console.log("YA");
+  }
+  if (state == roomStateID[0]) {
+    // console.log("YA");
+    if (data == true) {
+      texts[2].text = "Is";
+      backgrounds[0].text = pellet1;
+      audio.pause();
+      audio.currentTime = 0;
+      // audio.playbackRate = 0.5;
+    }
+    else {
       if (myGameArea.frameNo == 1 || everyinterval(Math.floor(Math.random() * Math.floor(200 - 100) + 100))) {
         // console.log("YAY");
         texts[2].text = "Is";
@@ -263,168 +247,158 @@ function updateGameArea() {
         }, 110)
       }
     }
-    // if (state == roomStateID[2]) {
-    //   if (myGameArea.frameNo == 1 || everyinterval(5)) {
-    //     if (power > 0) {
-    //       power = power - 1;
-    //     }
-    //     // console.log("power = "+power);
-    //     texts[0].text = "Power:"+power+"%";
-    //   }
-    //   if (myGameArea.frameNo == 1 || everyinterval(2700)) {
-    //     changeTime();
-    //   }
-    // }
-    if (dead == false) {
-      if (gameOn == true) {
-        if (power == 0) {
-          if (state != roomStateID[5]) {
-            if (state != roomStateID[3]) {
-              switchRoomState(roomStateID[5])
+  }
+  // if (state == roomStateID[2]) {
+  //   if (myGameArea.frameNo == 1 || everyinterval(5)) {
+  //     if (power > 0) {
+  //       power = power - 1;
+  //     }
+  //     // console.log("power = "+power);
+  //     texts[0].text = "Power:"+power+"%";
+  //   }
+  //   if (myGameArea.frameNo == 1 || everyinterval(2700)) {
+  //     changeTime();
+  //   }
+  // }
+  if (dead == false) {
+    if (gameOn == true) {
+      if (power == 0) {
+        if (state != roomStateID[5]) {
+          if (state != roomStateID[3]) {
+            switchRoomState(roomStateID[5])
+          }
+        }
+      }
+      else if (state != roomStateID[10]) {
+        if (usage == 1) {
+          if (myGameArea.frameNo == 1 || everyinterval(600)) {
+            if (power > 0) {
+              power = power - 1;
             }
           }
+        }
+        else if (usage == 2) {
+          if (myGameArea.frameNo == 1 || everyinterval(360)) {
+            if (power > 0) {
+              power = power - 1;
+            }
+          }
+        }
+        else if (usage == 3) {
+          if (myGameArea.frameNo == 1 || everyinterval(240)) {
+            if (power > 0) {
+              power = power - 1;
+            }
+          }
+        }
+        else if (usage == 4) {
+          if (myGameArea.frameNo == 1 || everyinterval(120)) {
+            if (power > 0) {
+              power = power - 1;
+            }
+          }
+        }
+        else if (usage == 5) {
+          if (myGameArea.frameNo == 1 || everyinterval(60)) {
+            if (power > 0) {
+              power = power - 1;
+            }
+          }
+        }
+        else if (usage == 6) {
+          if (myGameArea.frameNo == 1 || everyinterval(30)) {
+            if (power > 0) {
+              power = power - 1;
+            }
+          }
+        }
+        texts[0].text = "Power:"+power+"%";
+        // console.log(usage);
+        if (usage >= 1) {
+          usageBlocks[0].color = "#00F900";
         }
         else {
-          if (usage == 1) {
-            if (myGameArea.frameNo == 1 || everyinterval(600)) {
-              if (power > 0) {
-                power = power - 1;
-              }
-            }
-          }
-          else if (usage == 2) {
-            if (myGameArea.frameNo == 1 || everyinterval(360)) {
-              if (power > 0) {
-                power = power - 1;
-              }
-            }
-          }
-          else if (usage == 3) {
-            if (myGameArea.frameNo == 1 || everyinterval(240)) {
-              if (power > 0) {
-                power = power - 1;
-              }
-            }
-          }
-          else if (usage == 4) {
-            if (myGameArea.frameNo == 1 || everyinterval(120)) {
-              if (power > 0) {
-                power = power - 1;
-              }
-            }
-          }
-          else if (usage == 5) {
-            if (myGameArea.frameNo == 1 || everyinterval(60)) {
-              if (power > 0) {
-                power = power - 1;
-              }
-            }
-          }
-          else if (usage == 6) {
-            if (myGameArea.frameNo == 1 || everyinterval(30)) {
-              if (power > 0) {
-                power = power - 1;
-              }
-            }
-          }
-          texts[0].text = "Power:"+power+"%";
-          // console.log(usage);
-          if (usage >= 1) {
-            usageBlocks[0].color = "#00F900";
-          }
-          else {
-            usageBlocks[0].color = "rgba(0,0,0,0)";
-          }
-          if (usage >= 2) {
-            usageBlocks[1].color = "#D4FB79";
-          }
-          else {
-            usageBlocks[1].color = "rgba(0,0,0,0)";
-          }
-          if (usage >= 3) {
-            usageBlocks[2].color = "#FFFC79";
-          }
-          else {
-            usageBlocks[2].color = "rgba(0,0,0,0)";
-          }
-          if (usage >= 4) {
-            usageBlocks[3].color = "#FFD479";
-          }
-          else {
-            usageBlocks[3].color = "rgba(0,0,0,0)";
-          }
-          if (usage >= 5) {
-            usageBlocks[4].color = "#FF9300";
-          }
-          else {
-            usageBlocks[4].color = "rgba(0,0,0,0)";
-          }
-          if (usage >= 6) {
-            usageBlocks[5].color = "#FF2600";
-          }
-          else {
-            usageBlocks[5].color = "rgba(0,0,0,0)";
-          }
+          usageBlocks[0].color = "rgba(0,0,0,0)";
         }
-        if (myGameArea.frameNo == 1 || everyinterval(2700)) {
-          changeTime();
+        if (usage >= 2) {
+          usageBlocks[1].color = "#D4FB79";
         }
-        if (myGameArea.frameNo == 1 || everyinterval(30)) {
-          move();
+        else {
+          usageBlocks[1].color = "rgba(0,0,0,0)";
         }
+        if (usage >= 3) {
+          usageBlocks[2].color = "#FFFC79";
+        }
+        else {
+          usageBlocks[2].color = "rgba(0,0,0,0)";
+        }
+        if (usage >= 4) {
+          usageBlocks[3].color = "#FFD479";
+        }
+        else {
+          usageBlocks[3].color = "rgba(0,0,0,0)";
+        }
+        if (usage >= 5) {
+          usageBlocks[4].color = "#FF9300";
+        }
+        else {
+          usageBlocks[4].color = "rgba(0,0,0,0)";
+        }
+        if (usage >= 6) {
+          usageBlocks[5].color = "#FF2600";
+        }
+        else {
+          usageBlocks[5].color = "rgba(0,0,0,0)";
+        }
+      }
+      if (myGameArea.frameNo == 1 || everyinterval(2700)) {
+        changeTime();
+      }
+      if (myGameArea.frameNo == 1 || everyinterval(60)) {
+        move();
       }
     }
     for (var i = 0; i < backgrounds.length; i++) {
-      backgrounds[i].newPos();
       backgrounds[i].update();
     }
     for (var i = 0; i < staticCam.length; i++) {
-      staticCam[i].newPos();
       staticCam[i].update();
     }
     for (var i = 0; i < doors.length; i++) {
-      doors[i].newPos();
       doors[i].update();
     }
     for (var i = 0; i < pelletDoor.length; i++) {
-      pelletDoor[i].newPos();
       pelletDoor[i].update();
     }
     for (var i = 0; i < doorCovers.length; i++) {
-      doorCovers[i].newPos();
       doorCovers[i].update();
     }
     for (var i = 0; i < desk.length; i++) {
-      desk[i].newPos();
       desk[i].update();
     }
     for (var i = 0; i < mapRender.length; i++) {
-      mapRender[i].newPos();
       mapRender[i].update();
     }
     for (var i = 0; i < buttons.length; i++) {
-      buttons[i].newPos();
       buttons[i].update();
     }
     for (var i = 0; i < cam.length; i++) {
-      cam[i].newPos();
       cam[i].update();
     }
     for (var i = 0; i < camButton.length; i++) {
-      camButton[i].newPos();
       camButton[i].update();
     }
     for (var i = 0; i < camButtonDetect.length; i++) {
-      camButtonDetect[i].newPos();
       camButtonDetect[i].update();
     }
     for (var i = 0; i < usageBlocks.length; i++) {
-      usageBlocks[i].newPos();
       usageBlocks[i].update();
     }
     for (var i = 0; i < texts.length; i++) {
-      texts[i].newPos();
       texts[i].update();
+    }
+    for (var i = 0; i < jumpscare.length; i++) {
+      jumpscare[i].update();
     }
   }
 }
@@ -611,6 +585,7 @@ function switchRoomState(n) {
   cam = [];
   mapRender = [];
   pelletDoor = [];
+  jumpscare = [];
   if (n == roomStateID[0]) {
     state = roomStateID[0];
     dead = false;
@@ -634,6 +609,7 @@ function switchRoomState(n) {
     power = 100;
     time = 12;
     usage = 0;
+    pelletRoomIn = pelletRoom[0]
     currentCam = roomStateID[4];
     opening.currentTime = 0;
     opening.play();
@@ -656,7 +632,7 @@ function switchRoomState(n) {
       usage = 1;
       gameOn = true;
     }
-    backgrounds.push(new component(500, 500, "#A34902", 500, 500));
+    backgrounds.push(new component(500, 500, "#A34902", 0, 0));
     camButton.push(new component(0, 0, "#000", 50, 430, "image", camButtonPic));
     camButtonDetect.push(new component(403, 60, "rgba(255,255,255,0)", 50, 430, "camButton"));
     // camButton.push(new component(0, 0, "#000", 50, 10, "image", camButtonPic));
@@ -735,6 +711,7 @@ function switchRoomState(n) {
       }
       callDone = true;
     }
+    // jumpscare.push(new component(680, 510, "#f0f", 0, 0, "video", jumpscareVid));
   }
   else if (n == roomStateID[3]) {
     state = roomStateID[3];
@@ -746,7 +723,9 @@ function switchRoomState(n) {
     door3Close = false;
     cameraState = false;
     mouseOnCamera = false;
+    callDone = false;
     gameOn = false;
+    deathActivate = false;
     alarm.play();
     fan.pause();
     fan.currentTime = 0;
@@ -754,6 +733,8 @@ function switchRoomState(n) {
     fan2.currentTime = 0;
     light.pause();
     light.currentTime = 0;
+    jumpscareVid.pause();
+    jumpscare.currentTime = 0;
     garageOpen.pause();
     garageOpen.currentTime = 0;
     garageClose.pause();
@@ -894,7 +875,7 @@ function switchRoomState(n) {
       light.currentTime = 0;
     }
     door3Light = false;
-    backgrounds.push(new component(500, 500, "#3C3C3C", 500, 500));
+    backgrounds.push(new component(500, 500, "#3C3C3C", 0, 0));
     buttons.push(new component(30, 30, "#000", 460, 200, "doorLight3"));
     doors.push(new component(80, 200, "#000", 50, 150, "door1"));
     buttons.push(new component(30, 30, "#000", 10, 260, "doorClose1"));
@@ -1014,7 +995,10 @@ function switchRoomState(n) {
         backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet3LeftHall));
       }
       else if (phase == 3) {
-        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet3LeftHall));
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet4LeftHall));
+      }
+      else if (phase == 4) {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1LeftHall));
       }
     }
     else {
@@ -1087,6 +1071,9 @@ function switchRoomState(n) {
       }
       else if (phase == 2) {
         backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet3MiddleHall));
+      }
+      else if (phase == 3) {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1MiddleHall));
       }
     }
     else {
@@ -1163,6 +1150,9 @@ function switchRoomState(n) {
       else if (phase == 3) {
         backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet4RightHall));
       }
+      else if (phase == 4) {
+        backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1RightHall));
+      }
     }
     else {
       backgrounds.push(new component(0, 0, "#000", 0, 0, "image", pellet1RightHall));
@@ -1201,6 +1191,71 @@ function switchRoomState(n) {
       buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 10, "mute"))
       texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 43, "text", "Mute"))
     }
+  }
+  else if (n == roomStateID[10]) {
+    state = roomStateID[10];
+    if (door1Light == true) {
+      if (usage > 1) {
+        usage = usage - 1;
+      }
+      light.pause();
+      light.currentTime = 0;
+    }
+    door1Light = false;
+    if (door2Light == true) {
+      if (usage > 1) {
+        usage = usage - 1;
+      }
+      light.pause();
+      light.currentTime = 0;
+    }
+    door2Light = false;
+    if (door3Light == true) {
+      if (usage > 1) {
+        usage = usage - 1;
+      }
+      light.pause();
+      light.currentTime = 0;
+    }
+
+    backgrounds.push(new component(500, 500, "#A34902", 0, 0));
+    doors.push(new component(80, 200, "#000", 50, 150, "door1"));
+    doors.push(new component(180, 250, "#000", 160, 100, "door2"));
+    doors.push(new component(80, 200, "#000", 370, 150, "door3"));
+    desk.push(new component(0, 0, "#000", 150, 300, "image", deskPic));
+    console.log("Dead Rendered");
+    if (muteOn == true) {
+      buttons.push(new component(80, 50, "rgba(255, 108, 248, 0.5)", 210, 10, "mute"))
+      texts.push(new component("15px", "PressStart2P", "#FFADF8", 220, 43, "text", "Mute"))
+    }
+    jumpscare.push(new component(667, 500, "#f0f", -80, 0, "video", jumpscareVid));
+  }
+  else if (n == roomStateID[11]) {
+    state = roomStateID[11];
+    door1Light = false;
+    door1Close = false;
+    door2Light = false;
+    door2Close = false;
+    door3Light = false;
+    door3Close = false;
+    cameraState = false;
+    mouseOnCamera = false;
+    callDone = false;
+    gameOn = false;
+    fan.pause();
+    fan.currentTime = 0;
+    fan2.pause();
+    fan2.currentTime = 0;
+    light.pause();
+    light.currentTime = 0;
+    garageOpen.pause();
+    garageOpen.currentTime = 0;
+    garageClose.pause();
+    garageClose.currentTime = 0;
+
+    texts.push(new component("25px", "PressStart2P", "white", 140, 230, "text", "GAME OVER"));
+    console.log("Game Over Rendered");
+    window.setTimeout('switchRoomState(roomStateID[0])', 6000);
   }
 }
 
@@ -1369,6 +1424,20 @@ function switchCameraState(n) {
       switchRoomState(roomStateID[9]);
     }
     // console.log("Camera State: "+cameraState);
+    if (deathActivate == false) {
+      if (pelletRoomIn == pelletRoom[5]) {
+        deathActivate = true
+        window.setTimeout(function () {
+          switchCameraState(0)
+          jumpscareVid.play()
+          day.play()
+          switchRoomState(roomStateID[10])
+          window.setTimeout(function () {
+            switchRoomState(roomStateID[11])
+          }, 730)
+        }, 2000)
+      }
+    }
   }
   else if (n == 0) {
     console.log("Camera Down Rendered");
@@ -1594,17 +1663,22 @@ function move() {
           }
         }
         else if (phase==4){
-          pelletRoomIn=pelletRoom[0]
-          phase = 1
-          if (state == roomStateID[4]) {
-            backgrounds.splice(0,1);
-            console.log("SPLICE");
-            window.setTimeout(function() {
-              if (state == roomStateID[4]) {
-                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1Bedroom));
-              }
-            }, 1000);
+          if (door1Close == true) {
+            pelletRoomIn = pelletRoom[0]
+            if (state == roomStateID[4]) {
+              backgrounds.splice(0, 1);
+              console.log("SPLICE");
+              window.setTimeout(function () {
+                if (state == roomStateID[4]) {
+                  backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1Bedroom));
+                }
+              }, 1000);
+            }
           }
+          else {
+            pelletRoomIn = pelletRoom[5]
+          }
+          phase = 1
           if (state == roomStateID[2]) {
             if (door1Light == true)
               doorLight(1);
@@ -1645,17 +1719,22 @@ function move() {
           }
         }
         else if (phase==3){
-          pelletRoomIn=pelletRoom[0]
-          phase = 1
-          if (state == roomStateID[4]) {
-            backgrounds.splice(0,1);
-            console.log("SPLICE");
-            window.setTimeout(function() {
-              if (state == roomStateID[4]) {
-                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1Bedroom));
-              }
-            }, 1000);
+          if (door2Close == true) {
+            pelletRoomIn = pelletRoom[0]
+            if (state == roomStateID[4]) {
+              backgrounds.splice(0, 1);
+              console.log("SPLICE");
+              window.setTimeout(function () {
+                if (state == roomStateID[4]) {
+                  backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1Bedroom));
+                }
+              }, 1000);
+            }
           }
+          else {
+            pelletRoomIn = pelletRoom[5]
+          }
+          phase = 1
           if (state == roomStateID[2]) {
             if (door2Light == true)
               doorLight(3);
@@ -1709,27 +1788,28 @@ function move() {
           }
         }
         else if (phase==4){
-          pelletRoomIn=pelletRoom[0]
-          phase = 1
-          if (state == roomStateID[4]) {
-            backgrounds.splice(0,1);
-            console.log("SPLICE");
-            window.setTimeout(function() {
-              if (state == roomStateID[4]) {
-                backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1Bedroom));
-              }
-            }, 1000);
+          if (door3Close == true) {
+            pelletRoomIn = pelletRoom[0]
+            if (state == roomStateID[4]) {
+              backgrounds.splice(0, 1);
+              console.log("SPLICE");
+              window.setTimeout(function () {
+                if (state == roomStateID[4]) {
+                  backgrounds.unshift(new component(0, 0, "#000", 0, 0, "image", pellet1Bedroom));
+                }
+              }, 1000);
+            }
           }
+          else {
+            pelletRoomIn = pelletRoom[5]
+          }
+          phase = 1
           if (state == roomStateID[2]) {
             if (door3Light == true)
               doorLight(4);
             console.log("lol");
           }
         }
-      }
-      if (pelletRoomIn==pelletRoom[5]){
-          console.log("You are dead. Not big suprise.")
-          dead = true
       }
 
       console.log("Phase "+phase);
@@ -1772,21 +1852,28 @@ function checkKey(e) {
   if (state == roomStateID[0]) {
     if (key.keyCode == '83' && dataOrder == 0) {
       dataOrder++;
+      console.log("1");
     }
     else if (key.keyCode == '67' && dataOrder == 1) {
       dataOrder++;
+      console.log("2");
     }
     else if (key.keyCode == '65' && dataOrder == 2) {
       dataOrder++;
+      console.log("3");
     }
     else if (key.keyCode == '82' && dataOrder == 3) {
       dataOrder++;
+      console.log("4");
     }
     else if (key.keyCode == '89' && dataOrder == 4) {
       dataOrder++;
+      console.log("5");
+      data = true;
     }
     else {
       dataOrder = 0;
+      console.log("6");
     }
   }
 }
