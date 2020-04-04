@@ -1,15 +1,25 @@
 {
-  "name": "onenightisnotscary",
+  "name": "fcam_hob",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
   },
   "author": "proradar",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.3",
     "path": "^0.12.7"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/proradar/proradar-onins.git"
+  },
+  "bugs": {
+    "url": "https://github.com/proradar/proradar-onins/issues"
+  },
+  "homepage": "https://github.com/proradar/proradar-onins#readme",
+  "description": ""
 }
